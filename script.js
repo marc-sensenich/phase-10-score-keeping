@@ -57,18 +57,18 @@ function createRow(name, phase = 1, score = 0) {
 
   tableBody.appendChild(row);
 
-  // Store initial data in session storage
+  // Store initial data in storage
   storeTableData();
 }
 
-// Function to update session storage for a given row and key
-function updateSessionStorage(row, key, value) {
+// Function to update storage for a given row and key
+function updatelocalStorage(row, key, value) {
   const rowId = row.id;
-  sessionStorage.setItem(`${rowId}-${key}`, value);
+  localStorage.setItem(`${rowId}-${key}`, value);
 }
 
 function resetPhaseAndScore() {
-  sessionStorage.removeItem(tableName);
+  localStorage.removeItem(tableName);
   const rowsData = [];
   const rows = tableBody.getElementsByTagName("tr");
 
@@ -87,7 +87,7 @@ function resetPhaseAndScore() {
     rowsData.push(rowData);
   }
 
-  sessionStorage.setItem(tableName, JSON.stringify(rowsData));
+  localStorage.setItem(tableName, JSON.stringify(rowsData));
 }
 
 // Add a row when the button is clicked
@@ -128,12 +128,12 @@ function storeTableData() {
     rowsData.push(rowData);
   }
 
-  sessionStorage.setItem(tableName, JSON.stringify(rowsData));
+  localStorage.setItem(tableName, JSON.stringify(rowsData));
 }
 
 // Function to retrieve and restore table data from the JSON blob
 function restoreTableData() {
-  const storedData = sessionStorage.getItem(tableName);
+  const storedData = localStorage.getItem(tableName);
   if (storedData) {
     const rowsData = JSON.parse(storedData);
     rowsData.forEach((rowData) => {
