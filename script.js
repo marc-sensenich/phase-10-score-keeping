@@ -27,6 +27,8 @@ function createRow(name, phase = 1, score = 0) {
   phaseInput.value = phase; // Initial phase
   phaseInput.min = 1;
   phaseInput.max = 10;
+  phaseInput.pattern = "[0-9]*";
+  phaseInput.inputMode = "numeric";
   phaseInput.className = "input";
   phaseInput.addEventListener("change", () => {
     storeTableData();
@@ -38,6 +40,8 @@ function createRow(name, phase = 1, score = 0) {
   scoreInput.value = score; // Initial score
   scoreInput.min = 0;
   scoreInput.max = 9999;
+  scoreInput.pattern = "[0-9]*";
+  scoreInput.inputMode = "numeric";
   scoreInput.className = "input";
 
 
