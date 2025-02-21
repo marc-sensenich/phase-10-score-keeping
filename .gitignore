@@ -1,0 +1,12 @@
+*
+
+# GitHub Repo
+!README.md
+!.gitignore
+
+# GitHub Pages
+!CNAME
+
+# Webpage
+!index.html
+!script.js

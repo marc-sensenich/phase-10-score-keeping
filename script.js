@@ -1,148 +1,196 @@
-const tableBody = document.getElementById("tableBody");
-const addRowButton = document.getElementById("addRow");
-const newGameButton = document.getElementById("newGame");
-const clearButton = document.getElementById("clear");
-const tableName = "myTable"; // Unique identifier for the table
+const recordRoundModal = document.getElementById('recordRoundModal');
+const scoreTableBody = document.getElementById("scoreTableBody");
+const addPlayerButton = document.getElementById("addPlayerButton");
+const newGameButton = document.getElementById("newGameButton");
+const recordRoundButton = document.getElementById("recordRoundButton");
+const removeAllPlayersButton = document.getElementById("removeAllPlayersButton");
 
-function generateUniqueRowId() {
-  return Math.random().toString(36).substr(2, 9); // Generates a random 9-character string
+const GAME_LOCAL_STORAGE_KEY = "currentGame";
+
+class Game {
+  constructor(players = []) {
+    this.players = players;
+  }
+
+  addPlayer(name) {
+    this.players.push(new Player(self.crypto.randomUUID(), name));
+  }
 }
 
-// Function to create a new row and add it to the table
-function createRow(name, phase = 1, score = 0) {
+class Player {
+  constructor(id, name) {
+    this.id = id;
+    this.name = name;
+    this.phase = 1,
+      this.score = 0
+  }
+}
+
+function storeGame(game) {
+  localStorage.setItem(GAME_LOCAL_STORAGE_KEY, JSON.stringify(game));
+}
+
+function addPlayerToGame(name) {
+  let game = getCurrentGame();
+  game.addPlayer(name);
+  storeGame(game);
+}
+
+function createPlayerScoreTableRow(player) {
   const row = document.createElement("tr");
-  row.id = generateUniqueRowId(); // Assign a unique ID to the row
+  row.id = `score-table-row-${player.id}`;
 
   const nameCell = document.createElement("td");
   const phaseCell = document.createElement("td");
   const scoreCell = document.createElement("td");
-  const removeCell = document.createElement("td");
 
-  nameCell.setAttribute("data-name", name);
-  nameCell.textContent = name;
-  nameCell.className = "is-size-5";
+  const nameSpan = document.createElement("span");
+  nameSpan.textContent = player.name;
 
-  const phaseInput = document.createElement("input");
-  phaseInput.type = "number";
-  phaseInput.value = phase; // Initial phase
-  phaseInput.min = 1;
-  phaseInput.max = 10;
-  phaseInput.pattern = "[0-9]*";
-  phaseInput.inputMode = "numeric";
-  phaseInput.className = "input";
-  phaseInput.addEventListener("change", () => {
-    storeTableData();
-  });
-  phaseCell.appendChild(phaseInput);
+  nameCell.appendChild(nameSpan);
 
-  const scoreInput = document.createElement("input");
-  scoreInput.type = "number";
-  scoreInput.value = score; // Initial score
-  scoreInput.min = 0;
-  scoreInput.max = 9999;
-  scoreInput.pattern = "[0-9]*";
-  scoreInput.inputMode = "numeric";
-  scoreInput.className = "input";
+  const phaseSpan = document.createElement("span");
+  phaseSpan.textContent = player.phase;
 
+  phaseCell.appendChild(phaseSpan);
 
-  scoreInput.addEventListener("change", () => {
-    storeTableData();
-  });
-  scoreCell.appendChild(scoreInput);
+  const scoreSpan = document.createElement("span");
+  scoreSpan.textContent = player.score;
+
+  scoreCell.appendChild(scoreSpan);
 
   row.appendChild(nameCell);
   row.appendChild(phaseCell);
   row.appendChild(scoreCell);
-  row.appendChild(removeCell);
 
-  tableBody.appendChild(row);
-
-  // Store initial data in storage
-  storeTableData();
+  scoreTableBody.appendChild(row);
 }
 
-// Function to update storage for a given row and key
-function updatelocalStorage(row, key, value) {
-  const rowId = row.id;
-  localStorage.setItem(`${rowId}-${key}`, value);
+function createPlayerRecordRoundTableRow(player) {
+  let playerRow = document.createElement("tr");
+  playerRow.id = `record-round-table-row-${player.id}`;
+
+  let playerHeader = document.createElement("th");
+  playerHeader.scope = "row";
+  playerHeader.textContent = player.name;
+
+  let phaseCompleteCell = document.createElement("td");
+
+  let phaseInput = document.createElement("input");
+  phaseInput.className = "form-check-input";
+  phaseInput.type = "checkbox";
+  phaseInput.checked = false;
+  phaseInput.id = `${player.id}-check-completed-phase`;
+
+  phaseCompleteCell.appendChild(phaseInput);
+
+  let scoreCell = document.createElement("td");
+
+  let scoreInput = document.createElement("input");
+  scoreInput.type = "number";
+  scoreInput.className = "form-number-input";
+  scoreInput.value = 0;
+  scoreInput.min = 0;
+  scoreInput.max = 999;
+  scoreInput.pattern = "[0-9]*";
+  scoreInput.inputMode = "numeric";
+  scoreInput.id = `${player.id}-score`;
+
+  scoreCell.appendChild(scoreInput);
+
+  playerRow.appendChild(playerHeader);
+  playerRow.appendChild(phaseCompleteCell);
+  playerRow.appendChild(scoreCell);
+
+  return playerRow;
 }
 
-function resetPhaseAndScore() {
-  localStorage.removeItem(tableName);
-  const rowsData = [];
-  const rows = tableBody.getElementsByTagName("tr");
+function resetPhaseAndScoreForPlayers() {
+  const game = getCurrentGame();
 
-  for (const row of rows) {
-    const name = row.querySelector("[data-name]").textContent;
-    const inputs = row.getElementsByTagName("input");
-    
-    const phase = 1;
-    const score = 0;
-    
-    const rowData = {
-      name: name,
-      phase: phase,
-      score: score,
-    };
-    rowsData.push(rowData);
+  game.players.forEach((player) => {
+    player.score = 0;
+    player.phase = 1;
+  });
+
+  storeGame(game);
+}
+
+function getCurrentGame() {
+  let storageGame = localStorage.getItem(GAME_LOCAL_STORAGE_KEY);
+  if (storageGame) {
+    storageGame = Object.assign(new Game, JSON.parse(storageGame));
+  } else {
+    storageGame = new Game();
   }
 
-  localStorage.setItem(tableName, JSON.stringify(rowsData));
+  return storageGame;
 }
 
-// Add a row when the button is clicked
-addRowButton.addEventListener("click", () => {
+function renderScoreTableBody() {
+  scoreTableBody.replaceChildren();
+
+  const game = getCurrentGame();
+
+  game.players.forEach((player) => {
+    createPlayerScoreTableRow(player);
+  })
+}
+
+function recordRound() {
+  const game = getCurrentGame();
+
+  game.players.forEach((player) => {
+    const phaseCompleted = document.getElementById(`${player.id}-check-completed-phase`).checked;
+    const roundScore = parseInt(document.getElementById(`${player.id}-score`).value);
+
+    player.score += roundScore;
+    if (phaseCompleted && player.phase < 10) {
+      player.phase += 1;
+    }
+  });
+
+  storeGame(game);
+  renderScoreTableBody();
+}
+
+addPlayerButton.addEventListener("click", () => {
   const name = prompt("Enter name:");
   if (name) {
-    createRow(name);
+    addPlayerToGame(name);
   }
+
+  renderScoreTableBody();
 });
 
 newGameButton.addEventListener("click", () => {
-  resetPhaseAndScore();
-  tableBody.replaceChildren();
-  restoreTableData();
+  resetPhaseAndScoreForPlayers();
+  renderScoreTableBody();
 });
 
-clearButton.addEventListener("click", () => {
-  tableBody.replaceChildren();
-  storeTableData();
+removeAllPlayersButton.addEventListener("click", () => {
+  storeGame(new Game());
+  renderScoreTableBody();
 });
 
-function storeTableData() {
-  const rowsData = [];
-  const rows = tableBody.getElementsByTagName("tr");
+recordRoundButton.addEventListener("click", () => {
+  recordRound();
+});
 
-  for (const row of rows) {
-    const name = row.querySelector("[data-name]").textContent;
-    const inputs = row.getElementsByTagName("input");
-    
-    const phase = inputs[0].value;
-    const score = inputs[1].value;
-    
-    const rowData = {
-      name: name,
-      phase: phase,
-      score: score,
-    };
-    rowsData.push(rowData);
-  }
+recordRoundModal.addEventListener('hidden.bs.modal', () => {
+  const recordRoundTableBody = recordRoundModal.querySelector('#recordRoundTableBody')
+  recordRoundTableBody.replaceChildren();
+});
 
-  localStorage.setItem(tableName, JSON.stringify(rowsData));
-}
+recordRoundModal.addEventListener('show.bs.modal', () => {
+  const recordRoundTableBody = recordRoundModal.querySelector('#recordRoundTableBody')
+  const game = getCurrentGame();
 
-// Function to retrieve and restore table data from the JSON blob
-function restoreTableData() {
-  const storedData = localStorage.getItem(tableName);
-  if (storedData) {
-    const rowsData = JSON.parse(storedData);
-    rowsData.forEach((rowData) => {
-      createRow(rowData.name, rowData.phase, rowData.score);
-    });
-  }
-}
+  game.players.forEach((player) => {
+    recordRoundTableBody.appendChild(createPlayerRecordRoundTableRow(player));
+  });
+});
 
-window.addEventListener("beforeunload", storeTableData);
-tableBody.addEventListener("input", storeTableData);
+window.addEventListener("beforeunload", storeGame(getCurrentGame()));
 
-restoreTableData();
+renderScoreTableBody();
