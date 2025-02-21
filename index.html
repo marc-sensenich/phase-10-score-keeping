@@ -26,16 +26,14 @@
             </thead>
             <tbody id="scoreTableBody"></tbody>
         </table>
-        <div class="fixed-grid">
-            <div class="grid">
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recordRoundModal" aria-label="Finish round">
-                    <i class="bi bi-check-circle-fill"></i> Finish round
-                </button>
-                <button id="newGameButton" class="btn btn-warning" aria-label="New game"><i class="bi bi-arrow-clockwise"></i> New game</button>
-                <button id="addPlayerButton" class="btn btn-primary" aria-label="Add player"><i class="bi bi-person-fill-add"></i> Add player</button>
-                <button id="removeAllPlayersButton" class="btn btn-danger" aria-label="Remove all players"><i class="bi bi-person-fill-x"></i> Remove all players</button>
-            </div>
-        </div>
+        <div class="d-grid gap-2 d-md-block">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recordRoundModal" aria-label="Finish round">
+                <i class="bi bi-check-circle-fill"></i> Finish round
+            </button>
+            <button id="newGameButton" class="btn btn-warning" aria-label="New game"><i class="bi bi-arrow-clockwise"></i> New game</button>
+            <button id="addPlayerButton" class="btn btn-primary" aria-label="Add player"><i class="bi bi-person-fill-add"></i> Add player</button>
+            <button id="removeAllPlayersButton" class="btn btn-danger" aria-label="Remove all players"><i class="bi bi-person-fill-x"></i> Remove all players</button>
+          </div>
         <div class="modal fade" id="recordRoundModal" tabindex="-1" aria-labelledby="recordRoundModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
