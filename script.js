@@ -26,8 +26,8 @@
     constructor(id, name) {
       this.id = id;
       this.name = name;
-      this.phase = 1,
-        this.score = 0
+      this.phase = 1;
+      this.score = 0;
     }
   }
 
@@ -94,7 +94,7 @@
     let scoreInput = document.createElement("input");
     scoreInput.type = "number";
     scoreInput.className = "form-number-input";
-    scoreInput.value = 0;
+    scoreInput.placeholder = 0;
     scoreInput.min = 0;
     scoreInput.max = 999;
     scoreInput.pattern = "[0-9]*";
@@ -147,7 +147,7 @@
 
     game.players.forEach((player) => {
       const phaseCompleted = document.getElementById(`${player.id}-check-completed-phase`).checked;
-      const roundScore = parseInt(document.getElementById(`${player.id}-score`).value);
+      const roundScore = parseInt(document.getElementById(`${player.id}-score`).value || 0);
 
       player.score += roundScore;
       if (phaseCompleted && player.phase < 10) {
